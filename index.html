@@ -1,12 +1,37 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GabrielDev</title>
-</head>
-<body>
-    <h1>¡Hola! 👋 Soy Gabriel Rodríguez</h1>
-    <p>Este es mi sitio básico alojado en Render.com 🚀</p>
-</body>
-</html>
+<form id="f">
+  <input id="t" placeholder="Escribe una nota" />
+  <button>Agregar</button>
+</form>
+<ul id="list"></ul>
+
+<script>
+  const API = "https://render-api-test-fjz9.onrender.com"; // tu URL
+  const f = document.getElementById("f");
+  const t = document.getElementById("t");
+  const list = document.getElementById("list");
+
+  const load = () =>
+    fetch(`${API}/notes`).then(r=>r.json()).then(rows=>{
+      list.innerHTML = "";
+      rows.forEach(n=>{
+        const li = document.createElement("li");
+        li.textContent = `${n.id} · ${n.text} · ${new Date(n.created_at).toLocaleString()}`;
+        list.appendChild(li);
+      });
+    });
+
+  f.addEventListener("submit", async e=>{
+    e.preventDefault();
+    const text = t.value.trim();
+    if(!text) return;
+    await fetch(`${API}/notes`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ text })
+    });
+    t.value="";
+    load();
+  });
+
+  load();
+</script>
